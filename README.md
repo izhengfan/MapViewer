@@ -8,6 +8,8 @@
 
 3. OpenCV 2.4.x 
 
+4. Qt Creator (which should be already packaged with  Qt 5.7 for VS2015 32 bit)
+
 Note: this is my configuration currently under Windows. Adaption for other platforms should be easy. OpenCV 2.4.x should be built from source by yourself for VC14 (binary version is only for VC12 i.e. Visual Studio 2013).
 
 
