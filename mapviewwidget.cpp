@@ -3,7 +3,6 @@
 
 #include <QtWidgets>
 #include <QtOpenGL>
-#include <gl/GLU.h>
 
 using cv::Mat;
 using cv::Point3f;
@@ -18,6 +17,8 @@ const float mViewpointZ = -1.8;
 const float mViewpointF = 500;
 const float mOthorSize = 200;
 float mRatio = 0.005;
+
+const int mRotateRatio = 16;
 
 MapViewWidget::MapViewWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
@@ -68,9 +69,9 @@ QSize MapViewWidget::sizeHint() const
 static void qNormalizeAngle(int &angle)
 {
     while (angle < 0)
-        angle += 360 * 16;
-    while (angle > 360*16)
-        angle -= 360 * 16;
+        angle += 360 * mRotateRatio;
+    while (angle > 360*mRotateRatio)
+        angle -= 360 * mRotateRatio;
 }
 
 void MapViewWidget::setXRotation(int angle)
@@ -117,9 +118,9 @@ void MapViewWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     glTranslatef(xTrans, yTrans, -10.0);
-    glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
-    glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
-    glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
+    glRotatef(xRot / mRotateRatio, 1.0, 0.0, 0.0);
+    glRotatef(yRot / mRotateRatio, 0.0, 1.0, 0.0);
+    glRotatef(zRot / mRotateRatio, 0.0, 0.0, 1.0);
     draw();
 }
 
@@ -143,7 +144,6 @@ void MapViewWidget::resizeGL(int width, int height)
 #else
     glOrtho(left, right, bottom, top, znear, zfar);
 #endif
-    //gluPerspective(mViewpointF,512,0.1,1000);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -158,12 +158,11 @@ void MapViewWidget::mouseMoveEvent(QMouseEvent *event)
     int dy = event->y() - lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
-        setXRotation(xRot + 8 * dy);
-        setYRotation(yRot + 8 * dx);
+        setXRotation(xRot + mRotateRatio * dy /2);
+        setYRotation(yRot + mRotateRatio * dx /2);
     } else if (event->buttons() & Qt::RightButton) {
         xTrans += static_cast<float>(dx);
         yTrans -= static_cast<float>(dy);
-        //resizeGL(size().width(), size().height());
         updateGL();
     }
 
