@@ -28,6 +28,6 @@ by fzheng@link.cuhk.edu.hk
 
 ## MapViewer work plan
 
-[ ] add online map viewing function
+[] add online map viewing function
 
-[ ] add interface (more buttons) for more functions
+[] add interface (more buttons) for more functions
