@@ -12,9 +12,6 @@ class MapViewWidget : public QGLWidget
 public:
     explicit MapViewWidget(QWidget *parent = 0);
     ~MapViewWidget();
-signals:
-
-public slots:
 
 protected:
     void initializeGL();
@@ -30,10 +27,13 @@ protected:
     void drawFrame(const std::vector<cv::Point3f>& points, const cv::Point3f &rgb);
 
 public slots:
-    // slots for xyz-rotation slider
+    // slots for xyz-rotation
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
+
+    // open map file
+    void open();
 
 signals:
     // signaling rotation from mouse movement, currently not used.
@@ -41,8 +41,6 @@ signals:
     void yRotationChanged(int angle);
     void zRotationChanged(int angle);
 
-public slots:
-    void open();
 
 private:
     void draw();
