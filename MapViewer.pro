@@ -27,10 +27,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 win32{
 INCLUDEPATH += C:/opencv/build/include/opencv C:/opencv/build/include/
 Debug{
-LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249d -lopencv_highgui249d -lopencv_imgproc249d
+LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249d 
 }
 Release{
-LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249 -lopencv_highgui249 -lopencv_imgproc249
+LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249 
 }
 } # win32 config end
 
