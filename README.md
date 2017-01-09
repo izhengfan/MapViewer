@@ -25,3 +25,9 @@ Note: this is my configuration currently under Windows. Adaption for other platf
 4. scroll the mouse wheel to zoom; drag with left mouse button to rotate; drag with right mouse button to translate.
 
 by fzheng@link.cuhk.edu.hk
+
+## MapViewer work plan
+
+[ ] add online map viewing function
+
+[ ] add interface (more buttons) for more functions
