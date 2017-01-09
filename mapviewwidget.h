@@ -30,13 +30,13 @@ protected:
     void drawFrame(const std::vector<cv::Point3f>& points, const cv::Point3f &rgb);
 
 public slots:
-    // slots for xyz-rotation slider, currently not used.
+    // slots for xyz-rotation slider
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
 
 signals:
-    // signaling rotation from mouse movement
+    // signaling rotation from mouse movement, currently not used.
     void xRotationChanged(int angle);
     void yRotationChanged(int angle);
     void zRotationChanged(int angle);
