@@ -25,8 +25,8 @@ MapViewWidget::MapViewWidget(QWidget *parent)
     xRot = 0;
     yRot = 0;
     zRot = 0;
-    xView = 0;
-    yView = 0;
+    xTrans = 0;
+    yTrans = 0;
     map = new Map;
     //map->loadFromFile("C:/Users/fzheng/Documents/QtProjects/MapViewer/odoslam_.map");
 }
@@ -110,18 +110,13 @@ void MapViewWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glShadeModel(GL_SMOOTH);
-    //glEnable(GL_LIGHTING);
-    //glEnable(GL_LIGHT0);
-
-    //static GLfloat lightPosition[4] = { 0, 0, 10, 1.0 };
-    //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 }
 
 void MapViewWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    glTranslatef(0.0, 0.0, -10.0);
+    glTranslatef(xTrans, yTrans, -10.0);
     glRotatef(xRot / 16.0, 1.0, 0.0, 0.0);
     glRotatef(yRot / 16.0, 0.0, 1.0, 0.0);
     glRotatef(zRot / 16.0, 0.0, 0.0, 1.0);
@@ -132,7 +127,7 @@ void MapViewWidget::paintGL()
 void MapViewWidget::resizeGL(int width, int height)
 {
     int side = qMin(width, height);
-    glViewport((width - side) / 2 + xView, (height - side) / 2 + yView, side, side);
+    glViewport((width - side) / 2, (height - side) / 2, side, side);
 
     double left = -mOthorSize;
     double right = mOthorSize;
@@ -166,9 +161,9 @@ void MapViewWidget::mouseMoveEvent(QMouseEvent *event)
         setXRotation(xRot + 8 * dy);
         setYRotation(yRot + 8 * dx);
     } else if (event->buttons() & Qt::RightButton) {
-        xView += dx;
-        yView -= dy;
-        resizeGL(size().width(), size().height());
+        xTrans += static_cast<float>(dx);
+        yTrans -= static_cast<float>(dy);
+        //resizeGL(size().width(), size().height());
         updateGL();
     }
 
@@ -203,7 +198,7 @@ void MapViewWidget::draw()
     glLineWidth(mCameraLineWidth);
     glBegin(GL_LINES);
 
-    for(cv::Mat& pose : map->Poses)
+    for(const cv::Mat& pose : map->Poses)
     {
         float d = mCameraSize;
 
@@ -234,12 +229,14 @@ void MapViewWidget::draw()
 
         drawFrame(vPoints, Point3f(0,255,0));
     }
+
+    // draw lines between poses
+    // Warning: counting start from 1, not 0!
     for(int i=1, iend=map->Poses.size(); i<iend; i++)
     {
-        cv::Mat& pose = map->Poses[i-1];
-        cv::Mat& pose2 = map->Poses[i];
+        const cv::Mat& pose = map->Poses[i-1];
+        const cv::Mat& pose2 = map->Poses[i];
 
-        //Camera is a pyramid. Define in camera coordinate system
         cv::Mat o = (cv::Mat_<float>(4,1) << 0, 0, 0, 1);
 
         cv::Mat T = pose.inv();
@@ -263,7 +260,7 @@ void MapViewWidget::draw()
     // draw points
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
-    for(Point3f& point : map->Points)
+    for(const Point3f& point : map->Points)
     {
         Point3f pos = point * mRatio;
         glColor3f(0.4,0.4,0.4);

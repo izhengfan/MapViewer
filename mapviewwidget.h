@@ -30,7 +30,7 @@ protected:
     void drawFrame(const std::vector<cv::Point3f>& points, const cv::Point3f &rgb);
 
 public slots:
-    // slots for xyz-rotation slider
+    // slots for xyz-rotation slider, currently not used.
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
@@ -53,8 +53,8 @@ private:
     int yRot;
     int zRot;
 
-    int xView;
-    int yView;
+    float xTrans;
+    float yTrans;
 
     QPoint lastPos;
 };
