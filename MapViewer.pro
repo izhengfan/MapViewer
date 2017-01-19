@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl
+QT       += core gui opengl network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,23 +25,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 win32{
-INCLUDEPATH += C:/opencv/build/include/opencv C:/opencv/build/include/
+INCLUDEPATH += D:/opencv2413/opencv/sources/build/install/include/opencv D:/opencv2413/opencv/sources/build/install/include/
 Debug{
-LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249d 
+LIBS += -LD:/opencv2413/opencv/sources/build/install/x86/vc14/lib/ -lopencv_core2413d -lopencv_highgui2413d
 }
-Release{
-LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249 
-}
+#Release{
+#LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249
+#}
 } # win32 config end
 
 SOURCES += main.cpp\
         widget.cpp \
     mapviewwidget.cpp \
-    map.cpp
+    map.cpp \
+    rt_local_rcv.cpp \
+    imageThread.cpp \
+    mattoimage.cpp
 
 HEADERS  += widget.h \
     mapviewwidget.h \
-    map.h
+    map.h \
+    rt_local_rcv.h \
+    imageThread.h \
+    mattoimage.h
 
 FORMS    += widget.ui
 LIBS += opengl32.lib

@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 #include <QtOpenGL>
+#include <QDebug>
 
 using cv::Mat;
 using cv::Point3f;
@@ -29,7 +30,8 @@ MapViewWidget::MapViewWidget(QWidget *parent)
     xTrans = 0;
     yTrans = 0;
     map = new Map;
-    //map->loadFromFile("C:/Users/fzheng/Documents/QtProjects/MapViewer/odoslam_.map");
+    local_changed = false;
+    qRegisterMetaType<Mat>("cv::Mat");
 }
 
 MapViewWidget::~MapViewWidget()
@@ -37,7 +39,7 @@ MapViewWidget::~MapViewWidget()
     delete map;
 }
 
-//! Make sure that `points.size() == 5`
+//! Make sure that `points.size() == 5
 void MapViewWidget::drawFrame(const std::vector<cv::Point3f>& points, const cv::Point3f &rgb){
 
     assert(points.size() == 5);
@@ -63,7 +65,7 @@ QSize MapViewWidget::minimumSizeHint() const
 
 QSize MapViewWidget::sizeHint() const
 {
-    return QSize(400, 400);
+    return QSize(610, 490);
 }
 
 static void qNormalizeAngle(int &angle)
@@ -104,9 +106,19 @@ void MapViewWidget::setZRotation(int angle)
     }
 }
 
+void MapViewWidget::localChangedFun(const cv::Mat RT_local_)
+{
+
+    local_Mutex.lock();
+    RT_local = RT_local_.clone();
+    local_changed = true;
+    local_Mutex.unlock();
+
+}
+
 void MapViewWidget::initializeGL()
 {
-    qglClearColor(Qt::black);
+    qglClearColor(Qt::white);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -118,12 +130,12 @@ void MapViewWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     glTranslatef(xTrans, yTrans, -10.0);
+    //QMetaObject::invokeMethod(this,"updateGL",Qt::QueuedConnection);
     glRotatef(xRot / mRotateRatio, 1.0, 0.0, 0.0);
     glRotatef(yRot / mRotateRatio, 0.0, 1.0, 0.0);
     glRotatef(zRot / mRotateRatio, 0.0, 0.0, 1.0);
     draw();
 }
-
 
 void MapViewWidget::resizeGL(int width, int height)
 {
@@ -187,16 +199,51 @@ void MapViewWidget::open()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
     if (!fileName.isEmpty())
     {
-         map->loadFromFile(fileName);
+        map->loadFromFile(fileName);
     }
 }
 
 void MapViewWidget::draw()
 {
+
     // draw poses
     glLineWidth(mCameraLineWidth);
     glBegin(GL_LINES);
+    {
+        local_Mutex.lock();
+        if(local_changed){
+            float d = mCameraSize;
+            //Camera is a pyramid. Define in camera coordinate system
+            cv::Mat o = (cv::Mat_<float>(4,1) << 0, 0, 0, 1);
+            cv::Mat p1 = (cv::Mat_<float>(4,1) << d, d*0.8, d*0.5, 1);
+            cv::Mat p2 = (cv::Mat_<float>(4,1) << d, -d*0.8, d*0.5, 1);
+            cv::Mat p3 = (cv::Mat_<float>(4,1) << -d, -d*0.8, d*0.5, 1);
+            cv::Mat p4 = (cv::Mat_<float>(4,1) << -d, d*0.8, d*0.5, 1);
 
+            cv::Mat T = RT_local.inv();
+
+            T.at<float>(0,3) = T.at<float>(0,3)*mRatio;
+            T.at<float>(1,3) = T.at<float>(1,3)*mRatio;
+            T.at<float>(2,3) = T.at<float>(2,3)*mRatio;
+            cv::Mat ow = T*o;
+            cv::Mat p1w = T*p1;
+            cv::Mat p2w = T*p2;
+            cv::Mat p3w = T*p3;
+            cv::Mat p4w = T*p4;
+
+            std::vector<cv::Point3f> vPoints;
+            cv::Point3f ow3f(ow.at<float>(0),ow.at<float>(1),ow.at<float>(2));
+            vPoints.push_back(ow3f);
+            vPoints.push_back(Point3f(p1w.at<float>(0),p1w.at<float>(1),p1w.at<float>(2)));
+            vPoints.push_back(Point3f(p2w.at<float>(0),p2w.at<float>(1),p2w.at<float>(2)));
+            vPoints.push_back(Point3f(p3w.at<float>(0),p3w.at<float>(1),p3w.at<float>(2)));
+            vPoints.push_back(Point3f(p4w.at<float>(0),p4w.at<float>(1),p4w.at<float>(2)));
+
+            drawFrame(vPoints, Point3f(1.0, 0, 0));
+            local_changed = false;
+        }
+        local_Mutex.unlock();
+    }
     for(const cv::Mat& pose : map->Poses)
     {
         float d = mCameraSize;
@@ -207,11 +254,12 @@ void MapViewWidget::draw()
         cv::Mat p2 = (cv::Mat_<float>(4,1) << d, -d*0.8, d*0.5, 1);
         cv::Mat p3 = (cv::Mat_<float>(4,1) << -d, -d*0.8, d*0.5, 1);
         cv::Mat p4 = (cv::Mat_<float>(4,1) << -d, d*0.8, d*0.5, 1);
-
+        //qDebug() <<pose.at<float> (0,3) << " " <<pose .at<float>(1,3) <<pose .at<float>(2,3) <<endl;
         cv::Mat T = pose.inv();
         T.at<float>(0,3) = T.at<float>(0,3)*mRatio;
         T.at<float>(1,3) = T.at<float>(1,3)*mRatio;
         T.at<float>(2,3) = T.at<float>(2,3)*mRatio;
+
         cv::Mat ow = T*o;
         cv::Mat p1w = T*p1;
         cv::Mat p2w = T*p2;
@@ -226,9 +274,8 @@ void MapViewWidget::draw()
         vPoints.push_back(Point3f(p3w.at<float>(0),p3w.at<float>(1),p3w.at<float>(2)));
         vPoints.push_back(Point3f(p4w.at<float>(0),p4w.at<float>(1),p4w.at<float>(2)));
 
-        drawFrame(vPoints, Point3f(0,255,0));
+        drawFrame(vPoints, Point3f(0.0, 0.5, 1.0));
     }
-
     // draw lines between poses
     // Warning: counting start from 1, not 0!
     for(int i=1, iend=map->Poses.size(); i<iend; i++)
@@ -248,13 +295,12 @@ void MapViewWidget::draw()
         T2.at<float>(2,3) = T2.at<float>(2,3)*mRatio;
         cv::Mat ow = T*o;
         cv::Mat ow2 = T2*o;
-        glColor3f(0, 255, 255);
+        glColor3f(0.0, 0.5, 1.0);
         glVertex3f(ow.at<float>(0), ow.at<float>(1), ow.at<float>(2));
         glVertex3f(ow2.at<float>(0), ow2.at<float>(1), ow2.at<float>(2));
 
     }
     glEnd();
-
 
     // draw points
     glPointSize(mPointSize);
@@ -262,7 +308,7 @@ void MapViewWidget::draw()
     for(const Point3f& point : map->Points)
     {
         Point3f pos = point * mRatio;
-        glColor3f(0.4,0.4,0.4);
+        glColor3f(0.8, 0.8, 0.8);
         glVertex3f(pos.x, pos.y, pos.z);
     }
     glEnd();
