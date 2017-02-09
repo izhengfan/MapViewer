@@ -40,14 +40,18 @@ SOURCES += main.cpp\
     map.cpp \
     rt_local_rcv.cpp \
     imageThread.cpp \
-    mattoimage.cpp
+    mattoimage.cpp \
+    modeselection.cpp \
+    mapfilercv.cpp
 
 HEADERS  += widget.h \
     mapviewwidget.h \
     map.h \
     rt_local_rcv.h \
     imageThread.h \
-    mattoimage.h
+    mattoimage.h \
+    modeselection.h \
+    mapfilercv.h
 
 FORMS    += widget.ui
 LIBS += opengl32.lib

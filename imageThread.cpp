@@ -38,7 +38,7 @@ void imageThread::run()
         SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         while (:: connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR)) == -1)
         {
-                qDebug() << "connecting to the server!"  << endl;
+                qDebug() << "imgThread is connecting to the server!"  << endl;
         }
         //get a frame of localizer result
 

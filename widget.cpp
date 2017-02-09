@@ -11,8 +11,13 @@ Widget::Widget(QWidget *parent) :
     qRegisterMetaType<Mat>("cv::Mat");
     connect(&rt_rcv_local, SIGNAL(new_local(cv::Mat)), this, SLOT(showLocal(cv::Mat)));
     connect(&imgThread, SIGNAL(newImage(cv::Mat)), this, SLOT(showNewImage(cv::Mat)));
-    ui->openButton ->setEnabled(true);
+    connect(&mode_Selection, SIGNAL(modeSelected(int)),  this, SLOT(showSystemStatus(int)));
+    ui->openButton ->setEnabled(false);
+    ui->SLAM->setEnabled(true);
+    ui->LOCAL_ONLY->setEnabled(true);
     ui->cancelButton->setEnabled(true);
+    QString line = "Please click SLAM or LOCAL_ONLY Button!";
+    ui->statusLineEdit->setText(line);
 }
 
 Widget::~Widget()
@@ -42,24 +47,57 @@ void Widget::showNewImage(const cv::Mat &image)
     ui->imageLabel->resize(ui->imageLabel->pixmap()->size());
 }
 
+void Widget::showSystemStatus(int mode)
+{
+    ui->statusLineEdit->clear();
+    if(mode == 1){
+        QString line = "In SLAM Mode";
+        ui->statusLineEdit->setText(line);
+    }
+    else if(mode == 2){
+        QString line = "In LOCAL_ONLY Mode, click the OpenMap button";
+        ui->statusLineEdit->setText(line);
+    }
+    mode_Selection.exit();
+}
+
 void Widget::on_cancelButton_clicked()
 {
+    rt_rcv_local.exit();
+    imgThread.exit();
     close();
 }
 
 void Widget::on_openButton_clicked()
 {
     ui->widget->open();
+    ui->openButton->setEnabled(false);
 }
 
-void Widget::on_localRcvButton_clicked()
+void Widget::on_SLAM_clicked()
 {
-    rt_rcv_local.start();
-    ui->localRcvButton->setEnabled(false);
-}
-
-void Widget::on_ImageRcvButton_clicked()
-{
+    int fps = 30;
+    bool local_only = false;
+    bool saveMap = true;
+    bool useMap = false;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap);
     imgThread.start();
-    ui->ImageRcvButton->setEnabled(false);
+    mode_Selection.start();
+    ui->SLAM->setEnabled(false);
+    ui->LOCAL_ONLY->setEnabled(false);
+}
+
+void Widget::on_LOCAL_ONLY_clicked()
+{
+    int fps = 30;
+    bool local_only = true;
+    bool saveMap = false;
+    bool useMap = true;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap);
+    imgThread.start();
+    mode_Selection.start();
+    rt_rcv_local.start();
+    ui->SLAM->setEnabled(false);
+    ui->LOCAL_ONLY->setEnabled(false);
+    ui->openButton ->setEnabled(true);
 }

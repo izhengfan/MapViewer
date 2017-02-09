@@ -25,7 +25,7 @@ void RT_local_Rcv::run()
     memset(&sockAddr, 0, sizeof(sockAddr));
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_addr.S_un.S_addr = ::inet_addr("10.10.10.91");
-    sockAddr.sin_port = ::htons(8000);
+    sockAddr.sin_port = ::htons(7000);
 
     //data preparation
     cv::Mat result_buff(1,16, CV_32FC1);
@@ -36,7 +36,7 @@ void RT_local_Rcv::run()
         SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         while (:: connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR)) == -1)
         {
-            //qDebug() << "connecting to the server!" << endl;
+            qDebug() << "rt_ is connecting to the server!" << endl;
         }
         //get a frame of localizer result
         recv(sock, buffer, 16*4, NULL);

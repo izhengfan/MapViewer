@@ -7,6 +7,7 @@
 #include <QMetaType>
 #include "rt_local_rcv.h"
 #include "imageThread.h"
+#include "modeselection.h"
 namespace Ui {
 class Widget;
 }
@@ -25,18 +26,21 @@ private slots:
 
     void showNewImage(const cv::Mat&image);
 
+    void showSystemStatus(int mode);
+
     void on_cancelButton_clicked();
 
     void on_openButton_clicked();
 
-    void on_localRcvButton_clicked();
+    void on_SLAM_clicked();
 
-    void on_ImageRcvButton_clicked();
+    void on_LOCAL_ONLY_clicked();
 
 private:
     Ui::Widget *ui;
     RT_local_Rcv rt_rcv_local;
     imageThread imgThread;
+    modeSelection mode_Selection;
 };
 
 #endif // WIDGET_H
