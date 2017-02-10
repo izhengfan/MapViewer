@@ -7,25 +7,29 @@ struct mode{
     bool localization_only;
     bool saveMap;
     bool useExMap;
+    bool quitAll;
 };
 /*
- * presentMode = 0; NONE
- * presentMode = 1; SLAM
- * presentMode = 2; LOCALIZATION_ONLY
+ * presentMode == 0; NONE
+ * presentMode == 1; SLAM
+ * presentMode == 2; LOCALIZATION_ONLY
+ * presentMode == 3; quit
 */
 modeSelection::modeSelection(QObject *parent):QThread(parent)
 {
     stopped = false;
     modeUpdated = false;
     presentMode = 0;
+    quitAll = false;
 }
 
-void modeSelection::setMode(int fps, bool local_only, bool saveMap, bool useMap)
+void modeSelection::setMode(int fps, bool local_only, bool saveMap, bool useMap, bool quit)
 {
     FPS = fps;
     localization_only = local_only;
     saveNewMap = saveMap;
     useExMap = useMap;
+    quitAll = quit;
     modeUpdated = true;
 }
 
@@ -56,6 +60,7 @@ void modeSelection::run()
         newMode.localization_only = localization_only;
         newMode.saveMap = saveNewMap;
         newMode.useExMap = useExMap;
+        newMode.quitAll = quitAll;
 
         SOCKET sock =  socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         while(:: connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR)) == -1){
@@ -67,6 +72,8 @@ void modeSelection::run()
         qDebug() << buffer ;
         if(localization_only)
             presentMode = 2;
+        else if(quitAll)
+            presentMode = 3;
         else
             presentMode = 1;
         emit modeSelected(presentMode);

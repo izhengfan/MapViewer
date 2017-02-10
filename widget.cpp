@@ -8,11 +8,13 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    lastMode = 0;
     qRegisterMetaType<Mat>("cv::Mat");
     connect(&rt_rcv_local, SIGNAL(new_local(cv::Mat)), this, SLOT(showLocal(cv::Mat)));
     connect(&imgThread, SIGNAL(newImage(cv::Mat)), this, SLOT(showNewImage(cv::Mat)));
     connect(&mode_Selection, SIGNAL(modeSelected(int)),  this, SLOT(showSystemStatus(int)));
     ui->openButton ->setEnabled(false);
+    ui->quitButton->setEnabled(false);
     ui->SLAM->setEnabled(true);
     ui->LOCAL_ONLY->setEnabled(true);
     ui->cancelButton->setEnabled(true);
@@ -53,11 +55,24 @@ void Widget::showSystemStatus(int mode)
     if(mode == 1){
         QString line = "In SLAM Mode";
         ui->statusLineEdit->setText(line);
+        lastMode = mode;
     }
     else if(mode == 2){
         QString line = "In LOCAL_ONLY Mode, click the OpenMap button";
         ui->statusLineEdit->setText(line);
+        lastMode = mode;
     }
+    else if(mode == 3){
+        if(lastMode == 1){
+            QString line = "SLAM quit,  and begin to receive simple_odoslam.map file";
+            ui->statusLineEdit->setText(line);
+        }
+        else if (lastMode == 2){
+            QString line = "Localizer quit.";
+            ui->statusLineEdit->setText(line);
+        }
+    }
+
     mode_Selection.exit();
 }
 
@@ -72,6 +87,9 @@ void Widget::on_openButton_clicked()
 {
     ui->widget->open();
     ui->openButton->setEnabled(false);
+    ui->statusLineEdit->clear();
+    QString line = "Localizer is running!";
+    ui->statusLineEdit->setText(line);
 }
 
 void Widget::on_SLAM_clicked()
@@ -80,11 +98,13 @@ void Widget::on_SLAM_clicked()
     bool local_only = false;
     bool saveMap = true;
     bool useMap = false;
-    mode_Selection.setMode(fps, local_only, saveMap, useMap);
+    bool quitAll = false;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll);
     imgThread.start();
     mode_Selection.start();
     ui->SLAM->setEnabled(false);
     ui->LOCAL_ONLY->setEnabled(false);
+    ui->quitButton->setEnabled(true);
 }
 
 void Widget::on_LOCAL_ONLY_clicked()
@@ -93,11 +113,25 @@ void Widget::on_LOCAL_ONLY_clicked()
     bool local_only = true;
     bool saveMap = false;
     bool useMap = true;
-    mode_Selection.setMode(fps, local_only, saveMap, useMap);
+    bool quitAll = false;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll);
     imgThread.start();
     mode_Selection.start();
     rt_rcv_local.start();
     ui->SLAM->setEnabled(false);
     ui->LOCAL_ONLY->setEnabled(false);
     ui->openButton ->setEnabled(true);
+    ui->quitButton->setEnabled(true);
+}
+
+void Widget::on_quitButton_clicked()
+{
+    int fps = 30;
+    bool local_only = false;
+    bool saveMap = false;
+    bool useMap = false;
+    bool quitAll = true;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll);
+    mode_Selection.start();
+    ui->quitButton->setEnabled(false);
 }

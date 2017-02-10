@@ -36,11 +36,14 @@ private slots:
 
     void on_LOCAL_ONLY_clicked();
 
+    void on_quitButton_clicked();
+
 private:
     Ui::Widget *ui;
     RT_local_Rcv rt_rcv_local;
     imageThread imgThread;
     modeSelection mode_Selection;
+    int lastMode;
 };
 
 #endif // WIDGET_H

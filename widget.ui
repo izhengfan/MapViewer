@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>50</y>
+     <y>130</y>
      <width>410</width>
      <height>370</height>
     </rect>
@@ -99,6 +99,29 @@
      </spacer>
     </item>
     <item>
+     <widget class="QPushButton" name="quitButton">
+      <property name="text">
+       <string>Quit</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_6">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Preferred</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>13</width>
+        <height>28</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
      <widget class="QPushButton" name="openButton">
       <property name="text">
        <string>OpenMap</string>
@@ -143,10 +166,10 @@
   <widget class="QLineEdit" name="statusLineEdit">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>510</y>
-     <width>391</width>
-     <height>31</height>
+     <x>20</x>
+     <y>20</y>
+     <width>401</width>
+     <height>81</height>
     </rect>
    </property>
   </widget>
