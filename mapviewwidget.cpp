@@ -200,6 +200,8 @@ void MapViewWidget::open()
     if (!fileName.isEmpty())
     {
         map->loadFromFile(fileName);
+    }else{
+        qDebug() << "No file selected";
     }
 }
 

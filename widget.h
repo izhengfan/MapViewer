@@ -8,6 +8,7 @@
 #include "rt_local_rcv.h"
 #include "imageThread.h"
 #include "modeselection.h"
+#include "mapfilercv.h"
 namespace Ui {
 class Widget;
 }
@@ -28,6 +29,8 @@ private slots:
 
     void showSystemStatus(int mode);
 
+    void showFileTranStatus(bool done);
+
     void on_cancelButton_clicked();
 
     void on_openButton_clicked();
@@ -43,6 +46,7 @@ private:
     RT_local_Rcv rt_rcv_local;
     imageThread imgThread;
     modeSelection mode_Selection;
+    MapFileRCV mapRcv;
     int lastMode;
 };
 

@@ -15,35 +15,35 @@ int main(int argc, char *argv[])
 }
 
 
-#ifdef this_function_is_for_simplifying_map_file
-int main(int argc, char *argv[])
-{
-    using namespace  cv;
-    using namespace std;
+//#ifdef this_function_is_for_simplifying_map_file
+//int main(int argc, char *argv[])
+//{
+//    using namespace  cv;
+//    using namespace std;
 
-    Map* map = new Map();
-    map->loadFromFile("E:/SourceCode/odoslam_old.map");
+//    Map* map = new Map();
+//    map->loadFromFile("E:/SourceCode/odoslam_old.map");
 
-    FileStorage file("E:/SourceCode/MapViewer/MapViewer/odoslam.map", FileStorage::WRITE);
+//    FileStorage file("E:/SourceCode/MapViewer/MapViewer/odoslam.map", FileStorage::WRITE);
 
-    file << "KeyFrames" << "[";
-    for(Mat& pose: map->Poses) {
-        file << "{";
-        file << "Pose" << pose;
-        file << "}";
-    }
-    file << "]";
-    file << "MapPoints" << "[";
-    for(Point3f& pt : map->Points) {
-        file << "{";
-        file << "Pos" << pt;
-        file << "}";
-    }
-    file << "]";
+//    file << "KeyFrames" << "[";
+//    for(Mat& pose: map->Poses) {
+//        file << "{";
+//        file << "Pose" << pose;
+//        file << "}";
+//    }
+//    file << "]";
+//    file << "MapPoints" << "[";
+//    for(Point3f& pt : map->Points) {
+//        file << "{";
+//        file << "Pos" << pt;
+//        file << "}";
+//    }
+//    file << "]";
 
-    file.release();
+//    file.release();
 
-    delete map;
-    return 0;
-}
-#endif
+//    delete map;
+//    return 0;
+//}
+//#endif
