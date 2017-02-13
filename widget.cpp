@@ -13,7 +13,7 @@ Widget::Widget(QWidget *parent) :
     connect(&rt_rcv_local, SIGNAL(new_local(cv::Mat)), this, SLOT(showLocal(cv::Mat)));
     connect(&imgThread, SIGNAL(newImage(cv::Mat)), this, SLOT(showNewImage(cv::Mat)));
     connect(&mode_Selection, SIGNAL(modeSelected(int)),  this, SLOT(showSystemStatus(int)));
-    ui->openButton ->setEnabled(false);
+    connect(&mapRcv, SIGNAL(fileRcv(bool)), this, SLOT(showFileTranStatus(bool)));
     ui->quitButton->setEnabled(false);
     ui->SLAM->setEnabled(true);
     ui->LOCAL_ONLY->setEnabled(true);
@@ -76,6 +76,15 @@ void Widget::showSystemStatus(int mode)
     mode_Selection.exit();
 }
 
+void Widget::showFileTranStatus(bool done)
+{
+    if(done){
+        ui->statusLineEdit->clear();
+        QString line = "Map file has been received successfully!";
+        ui->statusLineEdit->setText(line);
+    }
+}
+
 void Widget::on_cancelButton_clicked()
 {
     rt_rcv_local.exit();
@@ -102,6 +111,7 @@ void Widget::on_SLAM_clicked()
     mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll);
     imgThread.start();
     mode_Selection.start();
+    mapRcv.start();
     ui->SLAM->setEnabled(false);
     ui->LOCAL_ONLY->setEnabled(false);
     ui->quitButton->setEnabled(true);

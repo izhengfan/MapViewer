@@ -11,8 +11,8 @@ Map::Map()
 
 bool Map::loadFromFile(QString filename)
 {
-    mapfile = filename.toStdString();
-    FileStorage fs(mapfile, FileStorage::READ);
+
+    cv::FileStorage fs(filename.toStdString(), FileStorage::READ);
 
     assert(fs.isOpened());
 
