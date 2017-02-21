@@ -14,12 +14,14 @@ Widget::Widget(QWidget *parent) :
     connect(&imgThread, SIGNAL(newImage(cv::Mat)), this, SLOT(showNewImage(cv::Mat)));
     connect(&mode_Selection, SIGNAL(modeSelected(int)),  this, SLOT(showSystemStatus(int)));
     connect(&mapRcv, SIGNAL(fileRcv(bool)), this, SLOT(showFileTranStatus(bool)));
-    ui->quitButton->setEnabled(false);
+    //ui->quitButton->setEnabled(false);
     ui->SLAM->setEnabled(true);
     ui->LOCAL_ONLY->setEnabled(true);
     ui->cancelButton->setEnabled(true);
-    QString line = "Please click SLAM or LOCAL_ONLY Button!";
+    QString line = "Please click Calibration, SLAM or LOCAL_ONLY Button!";
     ui->statusLineEdit->setText(line);
+
+    imgThread.start();
 }
 
 Widget::~Widget()
@@ -72,8 +74,12 @@ void Widget::showSystemStatus(int mode)
             ui->statusLineEdit->setText(line);
         }
     }
-
-    mode_Selection.exit();
+    else if(mode == 4){
+        QString line = "In Calibration Mode";
+        ui->statusLineEdit->setText(line);
+        lastMode = mode;
+    }
+    //mode_Selection.exit();
 }
 
 void Widget::showFileTranStatus(bool done)
@@ -108,7 +114,9 @@ void Widget::on_SLAM_clicked()
     bool saveMap = true;
     bool useMap = false;
     bool quitAll = false;
-    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll);
+    bool calib = false;
+    bool calib_done = false;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll, calib, calib_done);
     imgThread.start();
     mode_Selection.start();
     mapRcv.start();
@@ -124,7 +132,9 @@ void Widget::on_LOCAL_ONLY_clicked()
     bool saveMap = false;
     bool useMap = true;
     bool quitAll = false;
-    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll);
+    bool calib = false;
+    bool calib_done = false;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll, calib, calib_done);
     imgThread.start();
     mode_Selection.start();
     rt_rcv_local.start();
@@ -141,7 +151,28 @@ void Widget::on_quitButton_clicked()
     bool saveMap = false;
     bool useMap = false;
     bool quitAll = true;
-    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll);
+    bool calib = false;
+    bool calib_done = false;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll, calib, calib_done);
     mode_Selection.start();
     ui->quitButton->setEnabled(false);
+}
+
+void Widget::on_CalibrationButton_clicked()
+{
+    int fps = 30;
+    bool local_only = false;
+    bool saveMap = false;
+    bool useMap = false;
+    bool quitAll = false;
+    bool calib = true;
+    bool calib_done = false;
+    mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll, calib, calib_done);
+    mode_Selection.start();
+    imgThread.start();
+    ui->CalibrationButton->setEnabled(false);
+    ui->SLAM->setEnabled(false);
+    ui->LOCAL_ONLY->setEnabled(false);
+    ui->openButton ->setEnabled(false);
+    ui->quitButton->setEnabled(true);
 }

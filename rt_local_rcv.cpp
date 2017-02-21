@@ -34,9 +34,11 @@ void RT_local_Rcv::run()
         if(stopped) break;
         //connecting to the server
         SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        while (:: connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR)) == -1)
+        if (:: connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR)) == -1)
         {
+            closesocket(sock);
             qDebug() << "rt_ is connecting to the server!" << endl;
+            continue;
         }
         //get a frame of localizer result
         recv(sock, buffer, 16*4, NULL);

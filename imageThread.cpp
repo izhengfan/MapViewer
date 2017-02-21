@@ -3,12 +3,16 @@
 #include <QFile>
 #include <QTextStream>
 #include <WinSock2.h>
-#pragma comment(lib, "ws2_32.lib")
 
+#include <fstream>
+#include <iostream>
+//#include <Windows.h>
+#pragma comment(lib, "ws2_32.lib")
 imageThread::imageThread(QObject *parent) : QThread(parent)
 {
     qRegisterMetaType<Mat>("cv::Mat");
     stopped = false;
+
 }
 
 void imageThread::stop()
@@ -18,6 +22,9 @@ void imageThread::stop()
 
 void imageThread::run()
 {
+    std::ofstream imgRawFile;
+    imgRawFile.open("img.raws", std::ofstream::binary);
+
     WSADATA wsaData;
     if(WSAStartup(MAKEWORD(2, 2), &wsaData)) return;
     //socket preparation
@@ -26,19 +33,22 @@ void imageThread::run()
     sockAddr.sin_family = AF_INET;
     sockAddr.sin_addr.S_un.S_addr = ::inet_addr("10.10.10.91");
     sockAddr.sin_port = ::htons(9000);
-
     //data preparation
     cv::Mat img(480, 640, CV_8UC1);
     int imgsize = img.total()*img.elemSize();
     char * sockData = new char[imgsize];
     int bytes = 0;
+    SYSTEMTIME sysTime;
     while(1){
         if(stopped) break;
         //connecting to the server
         SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        while (:: connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR)) == -1)
+        if (:: connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR)) == -1)
         {
-                qDebug() << "imgThread is connecting to the server!"  << endl;
+            closesocket(sock);
+            qDebug() << "imgThread is connecting to the server!"  << endl;
+            continue;
+
         }
         //get a frame of localizer result
 
@@ -56,11 +66,20 @@ void imageThread::run()
             }
         }
         image = img.clone();
-//        cv::imshow("Source Image", image);
-//        cv::waitKey(1);
+
+        //Record imgTime(12 Bytes) and img(480*640 Bytes)
+        GetLocalTime(&sysTime);
+        imgRawFile << sysTime.wMonth
+                   << sysTime.wDay
+                   << sysTime.wHour
+                   << sysTime.wMinute
+                   << sysTime.wSecond
+                   << sysTime.wMilliseconds;
+        imgRawFile << image.data;
         emit newImage(image);
         closesocket(sock);
     }
+    imgRawFile.close();
     delete [] sockData;
     stopped = false;
     WSACleanup();

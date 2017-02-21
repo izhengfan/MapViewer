@@ -20,5 +20,6 @@ signals:
 private:
     volatile bool stopped;
     cv::Mat image;
+
 };
 #endif //IMAGETHREAD_H
