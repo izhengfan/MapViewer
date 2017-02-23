@@ -29,9 +29,9 @@ INCLUDEPATH += D:/opencv2413/opencv/sources/build/install/include/opencv D:/open
 Debug{
 LIBS += -LD:/opencv2413/opencv/sources/build/install/x86/vc14/lib/ -lopencv_core2413d -lopencv_highgui2413d
 }
-#Release{
-#LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249
-#}
+Release{
+LIBS += -LD:/opencv2413/opencv/sources/build/install/x86/vc14/lib/ -lopencv_core2413 -lopencv_highgui2413
+}
 } # win32 config end
 
 SOURCES += main.cpp\
