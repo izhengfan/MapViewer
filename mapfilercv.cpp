@@ -32,7 +32,7 @@ void MapFileRCV::run()
     WSADATA wsaData;
     if(WSAStartup(MAKEWORD(2, 2), &wsaData)) return;
 
-    FileStorage file("E:/SourceCode/MapViewer/MapViewer/odoslam.map", FileStorage::WRITE);
+    FileStorage file("./odoslam.map", FileStorage::WRITE);
 
     //socket preparation
     struct ::sockaddr_in sockAddr;

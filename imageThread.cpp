@@ -34,7 +34,7 @@ void imageThread::run()
     sockAddr.sin_addr.S_un.S_addr = ::inet_addr("10.10.10.91");
     sockAddr.sin_port = ::htons(9000);
     //data preparation
-    cv::Mat img(480, 640, CV_8UC1);
+    cv::Mat img(240, 320, CV_8UC1);
     int imgsize = img.total()*img.elemSize();
     char * sockData = new char[imgsize];
     int bytes = 0;
@@ -48,7 +48,6 @@ void imageThread::run()
             closesocket(sock);
             qDebug() << "imgThread is connecting to the server!"  << endl;
             continue;
-
         }
         //get a frame of localizer result
 
@@ -67,7 +66,7 @@ void imageThread::run()
         }
         image = img.clone();
 
-        //Record imgTime(12 Bytes) and img(480*640 Bytes)
+        //Record imgTime(12 Bytes) and img(240*340 Bytes)
         GetLocalTime(&sysTime);
         imgRawFile << sysTime.wMonth
                    << sysTime.wDay

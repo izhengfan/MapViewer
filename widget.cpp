@@ -2,11 +2,14 @@
 #include "ui_widget.h"
 #include <QImage>
 #include "mattoimage.h"
+
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Odoslam MapViewer");
 
     lastMode = 0;
     qRegisterMetaType<Mat>("cv::Mat");
@@ -20,8 +23,8 @@ Widget::Widget(QWidget *parent) :
     ui->cancelButton->setEnabled(true);
     QString line = "Please click Calibration, SLAM or LOCAL_ONLY Button!";
     ui->statusLineEdit->setText(line);
-
     imgThread.start();
+
 }
 
 Widget::~Widget()
@@ -46,8 +49,8 @@ void Widget::showNewImage(const cv::Mat &image)
 {
     ui->imageLabel->clear();
     QImage qimage = MatToQImage(image);
-    QImage newImage = qimage.scaled(410, 370);
-    ui->imageLabel->setPixmap(QPixmap::fromImage(newImage));
+//    QImage newImage = qimage.scaled(410, 370);
+    ui->imageLabel->setPixmap(QPixmap::fromImage(qimage));
     ui->imageLabel->resize(ui->imageLabel->pixmap()->size());
 }
 
@@ -101,7 +104,6 @@ void Widget::on_cancelButton_clicked()
 void Widget::on_openButton_clicked()
 {
     ui->widget->open();
-    ui->openButton->setEnabled(false);
     ui->statusLineEdit->clear();
     QString line = "Localizer is running!";
     ui->statusLineEdit->setText(line);
@@ -120,8 +122,8 @@ void Widget::on_SLAM_clicked()
     imgThread.start();
     mode_Selection.start();
     mapRcv.start();
-    ui->SLAM->setEnabled(false);
-    ui->LOCAL_ONLY->setEnabled(false);
+    ui->SLAM->setEnabled(true);
+    ui->LOCAL_ONLY->setEnabled(true);
     ui->quitButton->setEnabled(true);
 }
 
@@ -138,8 +140,8 @@ void Widget::on_LOCAL_ONLY_clicked()
     imgThread.start();
     mode_Selection.start();
     rt_rcv_local.start();
-    ui->SLAM->setEnabled(false);
-    ui->LOCAL_ONLY->setEnabled(false);
+    ui->SLAM->setEnabled(true);
+    ui->LOCAL_ONLY->setEnabled(true);
     ui->openButton ->setEnabled(true);
     ui->quitButton->setEnabled(true);
 }
@@ -170,9 +172,9 @@ void Widget::on_CalibrationButton_clicked()
     mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll, calib, calib_done);
     mode_Selection.start();
     imgThread.start();
-    ui->CalibrationButton->setEnabled(false);
-    ui->SLAM->setEnabled(false);
-    ui->LOCAL_ONLY->setEnabled(false);
+    ui->CalibrationButton->setEnabled(true);
+    ui->SLAM->setEnabled(true);
+    ui->LOCAL_ONLY->setEnabled(true);
     ui->openButton ->setEnabled(false);
     ui->quitButton->setEnabled(true);
 }
