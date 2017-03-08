@@ -148,16 +148,21 @@ void Widget::on_LOCAL_ONLY_clicked()
 
 void Widget::on_quitButton_clicked()
 {
+    bool calib ;
+    if (lastMode == 4)
+            calib = true;
+    else
+            calib = false;
     int fps = 30;
     bool local_only = false;
     bool saveMap = false;
     bool useMap = false;
     bool quitAll = true;
-    bool calib = false;
+
     bool calib_done = false;
     mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll, calib, calib_done);
     mode_Selection.start();
-    ui->quitButton->setEnabled(false);
+    //ui->quitButton->setEnabled(false);
 }
 
 void Widget::on_CalibrationButton_clicked()
