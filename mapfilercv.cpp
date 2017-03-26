@@ -24,7 +24,7 @@ MapFileRCV::MapFileRCV(QObject *parent) : QThread(parent)
 void MapFileRCV::stop()
 {
     stopped = true;
-    WSACleanup();
+
 }
 
 void MapFileRCV::run()
@@ -84,15 +84,16 @@ void MapFileRCV::run()
             file << "}";
         }else if(num < Point3f_size){
             file << "]";
-            qDebug()<< "end" << endl;
+            qDebug()<< "num: "  << num << "end" << endl;
             file.release();
             closesocket(sock);
-            break;
+            bool done = true;
+            emit fileRcv(done);
+//            break;
         }
         closesocket(sock);
     }
-    bool done = true;
-    emit fileRcv(done);
-
+    WSACleanup();
+    return;
 }
 

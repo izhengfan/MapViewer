@@ -12,6 +12,7 @@ Widget::Widget(QWidget *parent) :
     this->setWindowTitle("Odoslam MapViewer");
 
     lastMode = 0;
+
     qRegisterMetaType<Mat>("cv::Mat");
     connect(&rt_rcv_local, SIGNAL(new_local(cv::Mat)), this, SLOT(showLocal(cv::Mat)));
     connect(&imgThread, SIGNAL(newImage(cv::Mat)), this, SLOT(showNewImage(cv::Mat)));
@@ -41,7 +42,8 @@ void Widget::showLocal(const cv::Mat &result)
     line.push_back(" ");
     line.push_back(QString::number(result.at<float>(1,3), 'g', 6));
     line.push_back(" ");
-    line.push_back(QString::number(result.at<float>(2,3), 'g', 6));
+    double theta = atan2(result.at<float>(2,1), result.at<float>(1,1));
+    line.push_back(QString::number(theta, 'g', 6));
     ui->localLineEdit->setText(line);
 }
 
@@ -49,7 +51,7 @@ void Widget::showNewImage(const cv::Mat &image)
 {
     ui->imageLabel->clear();
     QImage qimage = MatToQImage(image);
-//    QImage newImage = qimage.scaled(410, 370);
+    //    QImage newImage = qimage.scaled(410, 370);
     ui->imageLabel->setPixmap(QPixmap::fromImage(qimage));
     ui->imageLabel->resize(ui->imageLabel->pixmap()->size());
 }
@@ -88,6 +90,8 @@ void Widget::showSystemStatus(int mode)
 void Widget::showFileTranStatus(bool done)
 {
     if(done){
+        mapRcv.quit();
+//        mapRcv.wait();
         ui->statusLineEdit->clear();
         QString line = "Map file has been received successfully!";
         ui->statusLineEdit->setText(line);
@@ -96,8 +100,8 @@ void Widget::showFileTranStatus(bool done)
 
 void Widget::on_cancelButton_clicked()
 {
-    rt_rcv_local.exit();
-    imgThread.exit();
+    //rt_rcv_local.exit();
+    //    imgThread.exit();
     close();
 }
 
@@ -150,18 +154,19 @@ void Widget::on_quitButton_clicked()
 {
     bool calib ;
     if (lastMode == 4)
-            calib = true;
+        calib = true;
     else
-            calib = false;
+        calib = false;
     int fps = 30;
     bool local_only = false;
     bool saveMap = false;
     bool useMap = false;
     bool quitAll = true;
-
     bool calib_done = false;
     mode_Selection.setMode(fps, local_only, saveMap, useMap, quitAll, calib, calib_done);
     mode_Selection.start();
+
+
     //ui->quitButton->setEnabled(false);
 }
 

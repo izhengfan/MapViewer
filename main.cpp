@@ -7,6 +7,7 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
+    cv::Mat curr_T = cv::Mat::eye(4,4,CV_32FC1);
     QApplication a(argc, argv);
     Widget w;
     w.show();
