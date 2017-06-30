@@ -188,6 +188,7 @@ void MapViewWidget::open()
     if (!fileName.isEmpty())
     {
          map->loadFromFile(fileName);
+         updateGL();
     }
 }
 

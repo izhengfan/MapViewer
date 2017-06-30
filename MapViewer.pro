@@ -32,7 +32,13 @@ LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249d
 Release{
 LIBS += -LC:/opencv/build/x86/vc14/lib/ -lopencv_core249 
 }
+LIBS += opengl32.lib
 } # win32 config end
+
+linux{
+INCLUDEPATH += /opt/ros/kinetic/include/opencv-3.2.0-dev
+LIBS += -L/opt/ros/kinetic/lib -lopencv_core3 -lGL
+}
 
 SOURCES += main.cpp\
         widget.cpp \
@@ -44,4 +50,3 @@ HEADERS  += widget.h \
     map.h
 
 FORMS    += widget.ui
-LIBS += opengl32.lib
