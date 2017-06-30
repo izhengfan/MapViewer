@@ -1,22 +1,26 @@
 # MapViewer
 
+![](map.png)
+
+
 ## MapViewer dependencies :
 
-1. Visual C++ 14 (from Visual Studio 2015)
+1. C++ 11 
 
-2. Qt 5.7 for VS2015 32 bit (http://download.qt.io/official_releases/qt/5.7/5.7.1/qt-opensource-windows-x86-msvc2015-5.7.1.exe.mirrorlist).
+2. Qt 5.x
 
 3. OpenCV 2.4.x 
 
-4. Qt Creator (which should be already packaged with  Qt 5.7 for VS2015 32 bit)
+4. Qt Creator 
 
-Note: this is my configuration currently under Windows. Adaption for other platforms should be easy. OpenCV 2.4.x should be built from source by yourself for VC14 (binary version is only for VC12 i.e. Visual Studio 2013).
+Adjust the INCLUDEPATH and LIBS options in `MapViewer.pro` according to the installation location of OpenCV in your machine.
 
+Note: tested under Windows (Qt 5.7 for MSVC 2015, with OpenCV 2.4.9) and Ubuntu 16.04 (Qt 5.7, with OpenCV 3.2.0 packaged alongside ROS Kinetic).
 
 
 ## MapViewer usage:
 
-1. open MapViewer.exe.
+1. open executable file MapViewer
 
 2. click on 'Open Map File' button.
 
