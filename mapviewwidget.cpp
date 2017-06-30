@@ -187,7 +187,7 @@ void MapViewWidget::open()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
     if (!fileName.isEmpty())
     {
-         map->loadFromFile(fileName);
+         map->loadFromFile(fileName.toStdString());
          updateGL();
     }
 }

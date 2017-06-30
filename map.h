@@ -3,7 +3,6 @@
 
 #include <opencv2/opencv.hpp>
 #include <vector>
-#include <QString>
 #include <string>
 class Map
 {
@@ -14,7 +13,7 @@ public:
 
     std::vector<cv::Mat>     Poses;
 
-    bool loadFromFile(QString filename);
+    bool loadFromFile(const std::string &filename);
 private:
     size_t size_pose;
     size_t size_point;

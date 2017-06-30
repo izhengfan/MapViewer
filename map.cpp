@@ -1,5 +1,4 @@
 #include "map.h"
-#include <QDebug>
 #include <cassert>
 using namespace cv;
 using namespace std;
@@ -9,9 +8,9 @@ Map::Map()
 
 }
 
-bool Map::loadFromFile(QString filename)
+bool Map::loadFromFile(const string &filename)
 {
-    mapfile = filename.toStdString();
+    mapfile = filename;
     FileStorage fs(mapfile, FileStorage::READ);
 
     assert(fs.isOpened());
